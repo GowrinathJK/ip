@@ -47,35 +47,35 @@ public class Vermithor {
      */
     private static void processCommand(String input, List<Task> tasks) throws VermithorException {
         String[] commandParts = input.split(" ", 2);
-        String command = commandParts[0].toLowerCase();
+        CommandType command = CommandType.fromCommandWord(commandParts[0]);
         String details = commandParts.length == 2 ? commandParts[1].trim() : "";
 
         switch (command) {
-        case "list":
+        case LIST:
             if (!details.isEmpty()) {
                 throw new VermithorException("The list command does not take extra words.");
             }
             printTaskList(tasks);
             return;
-        case "mark":
+        case MARK:
             updateTaskStatus(details, tasks, true);
             return;
-        case "unmark":
+        case UNMARK:
             updateTaskStatus(details, tasks, false);
             return;
-        case "todo":
+        case TODO:
             addTask(new ToDo(requireDescription(details, "todo")), tasks);
             return;
-        case "deadline":
+        case DEADLINE:
             addDeadline(details, tasks);
             return;
-        case "event":
+        case EVENT:
             addEvent(details, tasks);
             return;
-        case "delete":
+        case DELETE:
             deleteTask(details, tasks);
             return;
-        default:
+        case UNKNOWN:
             throw new VermithorException("I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
         }
     }
