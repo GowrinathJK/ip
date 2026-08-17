@@ -49,6 +49,29 @@ public class Vermithor {
                 task.markAsNotDone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + task);
+            } else if (input.startsWith("todo ")) {
+                Task task = new ToDo(input.substring(5));
+                tasks[taskCount] = task;
+                taskCount++;
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + task);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("deadline ")) {
+                String[] deadlineParts = input.substring(9).split(" /by ", 2);
+                Task task = new Deadline(deadlineParts[0], deadlineParts[1]);
+                tasks[taskCount] = task;
+                taskCount++;
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + task);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("event ")) {
+                String[] eventParts = input.substring(6).split(" /from | /to ", 3);
+                Task task = new Event(eventParts[0], eventParts[1], eventParts[2]);
+                tasks[taskCount] = task;
+                taskCount++;
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + task);
+                System.out.println("Now you have " + taskCount + " tasks in the list.");
             } else {
                 tasks[taskCount] = new Task(input);
                 taskCount++;
