@@ -1,7 +1,5 @@
 import java.util.Scanner;
-
 public class Vermithor {
-
     public static void main(String[] args) {
         String banner = "__      __\n"
                 + "\\ \\    / /__ _ __ _ __ ___ (_) |_| |__   ___  _ __\n"
@@ -13,6 +11,8 @@ public class Vermithor {
         System.out.println("Hello! I'm Vermithor.\nWhat can I do for you?");
 
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[100];
+        int taskCount = 0;
 
         while (true) {
             String input = scanner.nextLine().trim();
@@ -22,7 +22,15 @@ public class Vermithor {
                 break;
             }
 
-            System.out.println(input);
+            if (input.equalsIgnoreCase("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println("added: " + input);
+            }
         }
 
         scanner.close();
