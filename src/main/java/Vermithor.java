@@ -1,11 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Path;
 
 /**
  * A command-line chatbot that records tasks and lets users update their status.
  */
 public class Vermithor {
+    private static final Path DATA_FILE = Path.of("data", "vermithor.txt");
     /**
      * Starts Vermithor and processes commands until the user says goodbye.
      *
@@ -20,8 +22,9 @@ public class Vermithor {
         System.out.println(banner);
         System.out.println("Hello! I'm Vermithor.\nWhat can I do for you?");
 
+        Storage storage = new Storage(DATA_FILE);
+        List<Task> tasks = loadTasks(storage);
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = new ArrayList<>();
 
         while (true) {
             String input = scanner.nextLine().trim();
@@ -31,11 +34,22 @@ public class Vermithor {
                     break;
                 }
                 processCommand(input, tasks);
+                storage.save(tasks);
             } catch (VermithorException e) {
                 System.out.println("OOPS!!! " + e.getMessage());
             }
         }
         scanner.close();
+    }
+
+    /** Loads existing tasks while allowing the chatbot to continue after a storage problem. */
+    private static List<Task> loadTasks(Storage storage) {
+        try {
+            return storage.load();
+        } catch (VermithorException e) {
+            System.out.println("OOPS!!! " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     /**

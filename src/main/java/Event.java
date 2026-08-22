@@ -18,6 +18,16 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /** Returns the event start text. */
+    public String getFrom() {
+        return from;
+    }
+
+    /** Returns the event end text. */
+    public String getTo() {
+        return to;
+    }
+
     /**
      * Returns the event format used in the task list.
      *
