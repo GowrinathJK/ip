@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 /**
  * A command-line chatbot that records tasks and lets users update their status.
@@ -116,7 +118,12 @@ public class Vermithor {
         if (byIndex <= 0 || byIndex + 5 >= details.length()) {
             throw new VermithorException("Use deadline DESCRIPTION /by DATE.");
         }
-        addTask(new Deadline(details.substring(0, byIndex), details.substring(byIndex + 5)), tasks);
+        try {
+            LocalDate by = LocalDate.parse(details.substring(byIndex + 5));
+            addTask(new Deadline(details.substring(0, byIndex), by), tasks);
+        } catch (DateTimeParseException e) {
+            throw new VermithorException("Use a deadline date in yyyy-MM-dd format.");
+        }
     }
 
     /** Adds an event command after validating its description and time range. */
