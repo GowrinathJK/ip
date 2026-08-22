@@ -25,6 +25,21 @@ public class Task {
         isDone = false;
     }
 
+    /** Returns the task description. */
+    public String getDescription() {
+        return description;
+    }
+
+    /** Returns whether this task is complete. */
+    public boolean isDone() {
+        return isDone;
+    }
+
+    /** Restores the completion status read from persistent storage. */
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
     /**
      * Returns this task in the format shown in Vermithor's task list.
      *
