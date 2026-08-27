@@ -13,7 +13,33 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Duke.java` file, right-click it, and choose `Run Duke.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
+1. After that, locate the `src/main/java/vermithor/Vermithor.java` file, right-click it, and choose `Run Vermithor.main()` (if the code editor is showing compile errors, try restarting the IDE).
+
+## Build from the command line
+
+Use JDK 25, then run `./build.sh` to create the executable `build/vermithor.jar`:
+
+```sh
+./build.sh
+java -jar build/vermithor.jar
+```
+
+Maven is also configured for JUnit 5 tests and Javadoc generation:
+
+```sh
+mvn test
+mvn javadoc:javadoc
+```
+
+Gradle is also configured for Java 25, running the application, tests, and JAR packaging:
+
+```sh
+./gradlew test
+./gradlew run
+./gradlew jar
+```
+
+If the setup is correct, you should see something like the below as the output:
    ```
     ____        _        
    |  _ \ _   _| | _____ 

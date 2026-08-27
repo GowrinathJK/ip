@@ -1,9 +1,11 @@
+package vermithor;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 /**
  * A command-line chatbot that records tasks and lets users update their status.
@@ -26,22 +28,23 @@ public class Vermithor {
 
         Storage storage = new Storage(DATA_FILE);
         List<Task> tasks = loadTasks(storage);
-        Scanner scanner = new Scanner(System.in);
+        Ui ui = new Ui();
+        Parser parser = new Parser();
 
         while (true) {
-            String input = scanner.nextLine().trim();
+            String input = ui.readCommand();
             try {
                 if (input.equalsIgnoreCase("bye")) {
                     System.out.println("Bye. Hope to see you again soon!");
                     break;
                 }
-                processCommand(input, tasks);
+                processCommand(parser, input, tasks);
                 storage.save(tasks);
             } catch (VermithorException e) {
                 System.out.println("OOPS!!! " + e.getMessage());
             }
         }
-        scanner.close();
+        ui.close();
     }
 
     /** Loads existing tasks while allowing the chatbot to continue after a storage problem. */
@@ -61,10 +64,11 @@ public class Vermithor {
      * @param tasks the task storage list
      * @throws VermithorException if the command is invalid
      */
-    private static void processCommand(String input, List<Task> tasks) throws VermithorException {
-        String[] commandParts = input.split(" ", 2);
-        CommandType command = CommandType.fromCommandWord(commandParts[0]);
-        String details = commandParts.length == 2 ? commandParts[1].trim() : "";
+    private static void processCommand(Parser parser, String input, List<Task> tasks)
+            throws VermithorException {
+        Parser.ParsedCommand parsed = parser.parse(input);
+        CommandType command = parsed.command();
+        String details = parsed.details();
 
         switch (command) {
         case LIST:
@@ -91,8 +95,11 @@ public class Vermithor {
         case DELETE:
             deleteTask(details, tasks);
             return;
+        case FIND:
+            findTasks(details, tasks);
+            return;
         case UNKNOWN:
-            throw new VermithorException("I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+            throw new VermithorException("I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, find, or bye.");
         }
     }
 
@@ -161,6 +168,19 @@ public class Vermithor {
         System.out.println("Noted. I've removed this task:");
         System.out.println("  " + removedTask);
         System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+    }
+
+    /** Prints tasks whose descriptions contain the given keyword, ignoring letter case. */
+    private static void findTasks(String details, List<Task> tasks) throws VermithorException {
+        String keyword = requireDescription(details, "find").toLowerCase(Locale.ROOT);
+        System.out.println("Here are the matching tasks in your list:");
+        int matchingTaskNumber = 1;
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ROOT).contains(keyword)) {
+                System.out.println(matchingTaskNumber + ". " + task);
+                matchingTaskNumber++;
+            }
+        }
     }
 
     /** Validates and converts a user-entered one-based task number. */
