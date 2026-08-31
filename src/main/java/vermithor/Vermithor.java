@@ -23,12 +23,11 @@ public class Vermithor {
                 + " \\ \\  / / _ \\ '__| '_ ` _ \\| | __| '_ \\ / _ \\| '__|\n"
                 + "  \\ \\/ /  __/ |  | | | | | | | |_| | | | | (_) | |\n"
                 + "   \\__/ \\___|_|  |_| |_| |_|_|\\__|_| |_|\\___/|_|\n";
-        System.out.println(banner);
-        System.out.println("Hello! I'm Vermithor.\nWhat can I do for you?");
+        Ui ui = new Ui();
+        ui.show(banner, "Hello! I'm Vermithor.\nWhat can I do for you?");
 
         Storage storage = new Storage(DATA_FILE);
         List<Task> tasks = loadTasks(storage);
-        Ui ui = new Ui();
         Parser parser = new Parser();
 
         while (true) {
