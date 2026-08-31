@@ -16,9 +16,11 @@ public class Ui implements AutoCloseable {
         return scanner.nextLine().trim();
     }
 
-    /** Prints a message. */
-    public void show(String message) {
-        System.out.println(message);
+    /** Prints one or more messages in order. */
+    public void show(String... messages) {
+        for (String message : messages) {
+            System.out.println(message);
+        }
     }
 
     /** Closes the input stream wrapper. */
