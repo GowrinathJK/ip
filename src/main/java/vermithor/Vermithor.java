@@ -63,7 +63,7 @@ public class Vermithor {
      * @param tasks the task storage list
      * @throws VermithorException if the command is invalid
      */
-    private static void processCommand(Parser parser, String input, List<Task> tasks)
+    public static void processCommand(Parser parser, String input, List<Task> tasks)
             throws VermithorException {
         Parser.ParsedCommand parsed = parser.parse(input);
         CommandType command = parsed.command();
