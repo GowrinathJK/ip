@@ -1,3 +1,5 @@
+package vermithor;
+
 /**
  * Lists the commands Vermithor understands.
  */
@@ -9,6 +11,7 @@ public enum CommandType {
     DEADLINE,
     EVENT,
     DELETE,
+    FIND,
     UNKNOWN;
 
     /**
