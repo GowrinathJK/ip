@@ -12,6 +12,7 @@ public enum CommandType {
     EVENT,
     DELETE,
     FIND,
+    SORT,
     UNKNOWN;
 
     /**

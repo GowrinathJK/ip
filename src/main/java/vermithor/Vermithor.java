@@ -1,6 +1,7 @@
 package vermithor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -102,6 +103,9 @@ public class Vermithor {
         case FIND:
             findTasks(details, tasks);
             return;
+        case SORT:
+            sortTasks(details, tasks);
+            return;
         case UNKNOWN:
             throw new VermithorException(UNKNOWN_COMMAND_MESSAGE);
         }
@@ -184,6 +188,15 @@ public class Vermithor {
         for (int i = 0; i < matchingTasks.size(); i++) {
             System.out.println((i + 1) + ". " + matchingTasks.get(i));
         }
+    }
+
+    /** Sorts tasks alphabetically by description. */
+    private static void sortTasks(String details, List<Task> tasks) throws VermithorException {
+        if (!details.isEmpty()) {
+            throw new VermithorException("The sort command does not take extra words.");
+        }
+        tasks.sort(Comparator.comparing(task -> task.getDescription().toLowerCase(Locale.ROOT)));
+        printTaskList(tasks);
     }
 
     /** Validates and converts a user-entered one-based task number. */

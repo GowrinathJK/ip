@@ -39,6 +39,8 @@ Gradle is also configured for Java 25, running the application, tests, and JAR p
 ./gradlew jar
 ```
 
+The `sort` command orders tasks alphabetically by description.
+
 If the setup is correct, you should see something like the below as the output:
    ```
     ____        _        
