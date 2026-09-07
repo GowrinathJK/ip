@@ -67,6 +67,9 @@ public class Vermithor {
      */
     public static void processCommand(Parser parser, String input, List<Task> tasks)
             throws VermithorException {
+        assert parser != null : "A command parser is required";
+        assert input != null : "A command input is required";
+        assert tasks != null : "A task collection is required";
         Parser.ParsedCommand parsed = parser.parse(input);
         CommandType command = parsed.command();
         String details = parsed.details();
@@ -186,6 +189,7 @@ public class Vermithor {
 
     /** Validates and converts a user-entered one-based task number. */
     private static int getTaskNumber(String details, int taskCount) throws VermithorException {
+        assert taskCount >= 0 : "Task count cannot be negative";
         try {
             int taskNumber = Integer.parseInt(details);
             if (taskNumber < 1 || taskNumber > taskCount) {
