@@ -173,12 +173,11 @@ public class Vermithor {
     private static void findTasks(String details, List<Task> tasks) throws VermithorException {
         String keyword = requireDescription(details, "find").toLowerCase(Locale.ROOT);
         System.out.println("Here are the matching tasks in your list:");
-        int matchingTaskNumber = 1;
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase(Locale.ROOT).contains(keyword)) {
-                System.out.println(matchingTaskNumber + ". " + task);
-                matchingTaskNumber++;
-            }
+        List<Task> matchingTasks = tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(keyword))
+                .toList();
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.println((i + 1) + ". " + matchingTasks.get(i));
         }
     }
 
