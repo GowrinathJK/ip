@@ -13,6 +13,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 /** A minimal, fit-for-purpose JavaFX interface for Vermithor. */
@@ -21,24 +24,36 @@ public class MainApp extends Application {
     private final Parser parser = new Parser();
     private final Storage storage = new Storage(Path.of("data", "vermithor.txt"));
     private final TextArea transcript = new TextArea();
+    private final Label status = new Label("Ready");
 
     /** Builds and displays the chatbot window. */
     @Override
     public void start(Stage stage) {
         transcript.setEditable(false);
         transcript.setWrapText(true);
+        transcript.setStyle("-fx-font-family: 'Menlo'; -fx-font-size: 14px;");
+        transcript.setPromptText("Your Vermithor conversation will appear here");
         TextField input = new TextField();
         input.setPromptText("Enter a command, e.g. list or todo read a book");
+        input.setStyle("-fx-font-size: 14px;");
         Button send = new Button("Send");
+        send.setDefaultButton(true);
+        send.setStyle("-fx-font-weight: bold; -fx-padding: 8 18 8 18;");
         send.setOnAction(event -> submit(input));
         input.setOnAction(event -> submit(input));
 
         HBox controls = new HBox(8, input, send);
         controls.setPadding(new Insets(10));
-        BorderPane root = new BorderPane(transcript, null, null, controls, null);
+        HBox.setHgrow(input, Priority.ALWAYS);
+        status.setStyle("-fx-text-fill: #356859; -fx-font-size: 12px;");
+        VBox bottom = new VBox(4, controls, status);
+        BorderPane root = new BorderPane(transcript, null, null, bottom, null);
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #f4f7f6;");
         stage.setTitle("Vermithor");
         stage.setScene(new Scene(root, 650, 450));
+        stage.setMinWidth(420);
+        stage.setMinHeight(300);
         stage.show();
         transcript.appendText("Hello! I'm Vermithor. What can I do for you?\n");
     }
@@ -47,8 +62,12 @@ public class MainApp extends Application {
     private void submit(TextField input) {
         String command = input.getText().trim();
         if (command.isEmpty()) {
+            status.setText("Please enter a command.");
+            status.setStyle("-fx-text-fill: #b23a48; -fx-font-size: 12px; -fx-font-weight: bold;");
             return;
         }
+        status.setText("Processing...");
+        status.setStyle("-fx-text-fill: #356859; -fx-font-size: 12px;");
         input.clear();
         transcript.appendText("> " + command + "\n");
         if (command.equalsIgnoreCase("bye")) {
@@ -63,9 +82,14 @@ public class MainApp extends Application {
             storage.save(tasks);
         } catch (VermithorException exception) {
             System.out.println("OOPS!!! " + exception.getMessage());
+            status.setText("Error: " + exception.getMessage());
+            status.setStyle("-fx-text-fill: #b23a48; -fx-font-size: 12px; -fx-font-weight: bold;");
         } finally {
             System.setOut(original);
         }
         transcript.appendText(output.toString());
+        if (!status.getText().startsWith("Error:")) {
+            status.setText("Ready");
+        }
     }
 }
