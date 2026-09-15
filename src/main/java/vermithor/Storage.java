@@ -24,6 +24,9 @@ public class Storage {
         }
         try {
             for (String line : Files.readAllLines(filePath)) {
+                if (line.isBlank()) {
+                    continue;
+                }
                 tasks.add(deserialize(line));
             }
             return tasks;
@@ -66,6 +69,10 @@ public class Storage {
     /** Recreates one task from its saved text representation. */
     private Task deserialize(String line) {
         String[] fields = line.split("\\|", -1);
+        if (fields.length < 3 || ("D".equals(fields[0]) && fields.length != 4)
+                || ("E".equals(fields[0]) && fields.length != 5)) {
+            throw new IllegalArgumentException("Malformed task record");
+        }
         Task task;
         switch (fields[0]) {
         case "T":

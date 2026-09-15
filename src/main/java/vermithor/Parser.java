@@ -7,7 +7,10 @@ public class Parser {
 
     /** Parses one line of input. */
     public ParsedCommand parse(String input) {
-        String[] parts = input.trim().split(" ", 2);
+        if (input == null || input.isBlank()) {
+            return new ParsedCommand(CommandType.UNKNOWN, "");
+        }
+        String[] parts = input.trim().split("\\s+", 2);
         String details = parts.length == 2 ? parts[1].trim() : "";
         return new ParsedCommand(CommandType.fromCommandWord(parts[0]), details);
     }
