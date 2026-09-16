@@ -1,6 +1,13 @@
-# Duke project template
+# Vermithor
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+Vermithor is a Java 25 task manager with both a text-based interface and a JavaFX GUI. It helps you record todo tasks, deadlines, events, and searches in a persistent task list.
+
+## Features
+
+- Add todo, deadline, and event tasks
+- Mark, unmark, delete, find, and sort tasks
+- Save tasks between sessions
+- Use the responsive JavaFX GUI or the command-line interface
 
 ## Setting up in Intellij
 
@@ -13,41 +20,29 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/vermithor/Vermithor.java` file, right-click it, and choose `Run Vermithor.main()` (if the code editor is showing compile errors, try restarting the IDE).
+1. After that, locate `src/main/java/vermithor/Launcher.java`, right-click it, and choose `Run Launcher.main()`.
 
 ## Build from the command line
 
-Use JDK 25, then run `./build.sh` to create the executable `build/vermithor.jar`:
+Use JDK 25, then use Gradle to create the JavaFX fat JAR:
 
 ```sh
-./build.sh
-java -jar build/vermithor.jar
+./gradlew clean test shadowJar
+java -jar build/libs/vermithor.jar
 ```
 
-Maven is also configured for JUnit 5 tests and Javadoc generation:
-
-```sh
-mvn test
-mvn javadoc:javadoc
-```
-
-Gradle is also configured for Java 25, running the application, tests, and JAR packaging:
-
-```sh
-./gradlew test
-./gradlew run
-./gradlew jar
-```
+The generated fat JAR bundles JavaFX and is intended to run on a computer with Java 25.
 
 The `sort` command orders tasks alphabetically by description.
 
-If the setup is correct, you should see something like the below as the output:
-   ```
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+## Example commands
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+```text
+todo read a book
+deadline submit report /by 2026-09-18
+event team meeting /from 10:00 /to 11:00
+find report
+sort
+```
+
+**Warning:** Keep the `src/main/java` folder as the root folder for Java files, as this is the default location expected by Gradle.

@@ -1,6 +1,26 @@
-# Duke User Guide
+# Vermithor User Guide
 
-// Update the title above to match the actual product name
+Vermithor is a Java 25 task manager with a JavaFX interface.
+
+## Quick start
+
+1. Download `vermithor.jar` from the [latest release](https://github.com/GowrinathJK/ip/releases/latest).
+2. Run `java -jar vermithor.jar` with Java 25.
+3. Enter commands such as `todo read a book`, `list`, `find book`, or `sort`.
+
+## Task commands
+
+| Command | Example | Purpose |
+| --- | --- | --- |
+| `todo` | `todo read a book` | Adds a todo task |
+| `deadline` | `deadline submit report /by 2026-09-18` | Adds a dated task |
+| `event` | `event meeting /from 10:00 /to 11:00` | Adds an event |
+| `mark` | `mark 1` | Marks a task complete |
+| `find` | `find report` | Searches task descriptions |
+| `sort` | `sort` | Sorts tasks alphabetically |
+| `bye` | `bye` | Exits the application |
+
+If the application reports an error, check that Java 25 is active and that the data directory is writable.
 
 // Product screenshot goes here
 
