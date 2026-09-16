@@ -25,10 +25,12 @@ public class MainApp extends Application {
     private final Storage storage = new Storage(Path.of("data", "vermithor.txt"));
     private final TextArea transcript = new TextArea();
     private final Label status = new Label("Ready");
+    private Stage stage;
 
     /** Builds and displays the chatbot window. */
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         transcript.setEditable(false);
         transcript.setWrapText(true);
         transcript.setStyle("-fx-font-family: 'Menlo'; -fx-font-size: 14px;");
@@ -72,6 +74,7 @@ public class MainApp extends Application {
         transcript.appendText("> " + command + "\n");
         if (command.equalsIgnoreCase("bye")) {
             transcript.appendText("Bye. Hope to see you again soon!\n");
+            stage.close();
             return;
         }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
