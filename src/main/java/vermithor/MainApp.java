@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -75,6 +76,7 @@ public class MainApp extends Application {
         if (command.equalsIgnoreCase("bye")) {
             transcript.appendText("Bye. Hope to see you again soon!\n");
             stage.close();
+            Platform.exit();
             return;
         }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
