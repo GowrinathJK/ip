@@ -22,6 +22,8 @@ Vermithor is a Java 25 task manager with a JavaFX interface.
 
 If the application reports an error, check that Java 25 is active and that the data directory is writable.
 
+After `sort`, task numbers refer to the new displayed order. Tasks are saved automatically after changes and when the application closes with `bye`.
+
 // Product screenshot goes here
 
 // Product intro goes here

@@ -58,7 +58,22 @@ public class MainApp extends Application {
         stage.setMinWidth(420);
         stage.setMinHeight(300);
         stage.show();
+        loadSavedTasks();
         transcript.appendText("Hello! I'm Vermithor. What can I do for you?\n");
+    }
+
+    /** Loads tasks saved in the folder from which the application was launched. */
+    private void loadSavedTasks() {
+        try {
+            tasks.addAll(storage.load());
+            if (!tasks.isEmpty()) {
+                transcript.appendText("Loaded " + tasks.size() + " saved task(s).\n");
+            }
+        } catch (VermithorException exception) {
+            transcript.appendText("OOPS!!! " + exception.getMessage() + "\n");
+            status.setText("Could not load saved tasks.");
+            status.setStyle("-fx-text-fill: #b23a48; -fx-font-size: 12px; -fx-font-weight: bold;");
+        }
     }
 
     /** Processes one entered command and displays the chatbot response. */
@@ -75,6 +90,11 @@ public class MainApp extends Application {
         transcript.appendText("> " + command + "\n");
         if (command.equalsIgnoreCase("bye")) {
             transcript.appendText("Bye. Hope to see you again soon!\n");
+            try {
+                storage.save(tasks);
+            } catch (VermithorException exception) {
+                transcript.appendText("OOPS!!! " + exception.getMessage() + "\n");
+            }
             stage.close();
             Platform.exit();
             return;
