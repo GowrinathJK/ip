@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A command-line chatbot that records tasks and lets users update their status.
@@ -15,6 +17,9 @@ public class Vermithor {
     private static final Path DATA_FILE = Path.of("data", "vermithor.txt");
     private static final String UNKNOWN_COMMAND_MESSAGE =
             "I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, find, sort, or bye.";
+    private static final Pattern BY_MARKER = Pattern.compile("\\s+/by\\s+");
+    private static final Pattern FROM_MARKER = Pattern.compile("\\s+/from\\s+");
+    private static final Pattern TO_MARKER = Pattern.compile("\\s+/to\\s+");
     /**
      * Starts Vermithor and processes commands until the user says goodbye.
      *
@@ -133,13 +138,18 @@ public class Vermithor {
 
     /** Adds a deadline command after validating its description and deadline. */
     private static void addDeadline(String details, List<Task> tasks) throws VermithorException {
-        int byIndex = details.indexOf(" /by ");
-        if (byIndex <= 0 || byIndex + 5 >= details.length()) {
+        Matcher byMarker = BY_MARKER.matcher(details);
+        if (!byMarker.find() || byMarker.start() == 0) {
+            throw new VermithorException("Use deadline DESCRIPTION /by DATE.");
+        }
+        String description = details.substring(0, byMarker.start()).trim();
+        String dateText = details.substring(byMarker.end()).trim();
+        if (description.isEmpty() || dateText.isEmpty()) {
             throw new VermithorException("Use deadline DESCRIPTION /by DATE.");
         }
         try {
-            LocalDate by = LocalDate.parse(details.substring(byIndex + 5));
-            addTask(new Deadline(details.substring(0, byIndex), by), tasks);
+            LocalDate by = LocalDate.parse(dateText);
+            addTask(new Deadline(description, by), tasks);
         } catch (DateTimeParseException e) {
             throw new VermithorException("Use a deadline date in yyyy-MM-dd format.");
         }
@@ -147,14 +157,21 @@ public class Vermithor {
 
     /** Adds an event command after validating its description and time range. */
     private static void addEvent(String details, List<Task> tasks) throws VermithorException {
-        int fromIndex = details.indexOf(" /from ");
-        int toIndex = details.indexOf(" /to ");
-        if (fromIndex <= 0 || toIndex <= fromIndex + 7 || toIndex + 5 >= details.length()) {
+        Matcher fromMarker = FROM_MARKER.matcher(details);
+        if (!fromMarker.find() || fromMarker.start() == 0) {
             throw new VermithorException("Use event DESCRIPTION /from START /to END.");
         }
-        String description = details.substring(0, fromIndex);
-        String from = details.substring(fromIndex + 7, toIndex);
-        String to = details.substring(toIndex + 5);
+        String description = details.substring(0, fromMarker.start()).trim();
+        String afterFrom = details.substring(fromMarker.end());
+        Matcher toMarker = TO_MARKER.matcher(afterFrom);
+        if (!toMarker.find()) {
+            throw new VermithorException("Use event DESCRIPTION /from START /to END.");
+        }
+        String from = afterFrom.substring(0, toMarker.start()).trim();
+        String to = afterFrom.substring(toMarker.end()).trim();
+        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            throw new VermithorException("Use event DESCRIPTION /from START /to END.");
+        }
         addTask(new Event(description, from, to), tasks);
     }
 
