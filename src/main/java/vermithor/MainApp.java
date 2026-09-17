@@ -10,32 +10,37 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-/** A minimal, fit-for-purpose JavaFX interface for Vermithor. */
+/** A minimal, fit-for-purpose JavaFX interface for Vermithor, with per-message avatars. */
 public class MainApp extends Application {
     private final List<Task> tasks = new ArrayList<>();
     private final Parser parser = new Parser();
     private final Storage storage = new Storage(Path.of("data", "vermithor.txt"));
-    private final TextArea transcript = new TextArea();
+    private final VBox dialogContainer = new VBox(8);
+    private final ScrollPane scrollPane = new ScrollPane(dialogContainer);
     private final Label status = new Label("Ready");
+    private final Image botAvatar = new Image(getClass().getResourceAsStream("/images/vermithor.png"));
+    private final Image userAvatar = new Image(getClass().getResourceAsStream("/images/user.png"));
     private Stage stage;
 
     /** Builds and displays the chatbot window. */
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        transcript.setEditable(false);
-        transcript.setWrapText(true);
-        transcript.setStyle("-fx-font-family: 'Menlo'; -fx-font-size: 14px;");
-        transcript.setPromptText("Your Vermithor conversation will appear here");
+        dialogContainer.setPadding(new Insets(12));
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #f4f7f6; -fx-background-color: transparent;");
+        dialogContainer.heightProperty().addListener((observable, oldValue, newValue) -> scrollPane.setVvalue(1.0));
+
         TextField input = new TextField();
         input.setPromptText("Enter a command, e.g. list or todo read a book");
         input.setStyle("-fx-font-size: 14px;");
@@ -50,7 +55,7 @@ public class MainApp extends Application {
         HBox.setHgrow(input, Priority.ALWAYS);
         status.setStyle("-fx-text-fill: #356859; -fx-font-size: 12px;");
         VBox bottom = new VBox(4, controls, status);
-        BorderPane root = new BorderPane(transcript, null, null, bottom, null);
+        BorderPane root = new BorderPane(scrollPane, null, null, bottom, null);
         root.setPadding(new Insets(10));
         root.setStyle("-fx-background-color: #f4f7f6;");
         stage.setTitle("Vermithor");
@@ -58,8 +63,8 @@ public class MainApp extends Application {
         stage.setMinWidth(420);
         stage.setMinHeight(300);
         stage.show();
+        addBotMessage("Hello! I'm Vermithor. What can I do for you?");
         loadSavedTasks();
-        transcript.appendText("Hello! I'm Vermithor. What can I do for you?\n");
     }
 
     /** Loads tasks saved in the folder from which the application was launched. */
@@ -67,10 +72,10 @@ public class MainApp extends Application {
         try {
             tasks.addAll(storage.load());
             if (!tasks.isEmpty()) {
-                transcript.appendText("Loaded " + tasks.size() + " saved task(s).\n");
+                addBotMessage("Loaded " + tasks.size() + " saved task(s).");
             }
         } catch (VermithorException exception) {
-            transcript.appendText("OOPS!!! " + exception.getMessage() + "\n");
+            addBotMessage("OOPS!!! " + exception.getMessage());
             status.setText("Could not load saved tasks.");
             status.setStyle("-fx-text-fill: #b23a48; -fx-font-size: 12px; -fx-font-weight: bold;");
         }
@@ -87,13 +92,13 @@ public class MainApp extends Application {
         status.setText("Processing...");
         status.setStyle("-fx-text-fill: #356859; -fx-font-size: 12px;");
         input.clear();
-        transcript.appendText("> " + command + "\n");
+        addUserMessage(command);
         if (command.equalsIgnoreCase("bye")) {
-            transcript.appendText("Bye. Hope to see you again soon!\n");
+            addBotMessage("Bye. Hope to see you again soon!");
             try {
                 storage.save(tasks);
             } catch (VermithorException exception) {
-                transcript.appendText("OOPS!!! " + exception.getMessage() + "\n");
+                addBotMessage("OOPS!!! " + exception.getMessage());
             }
             stage.close();
             Platform.exit();
@@ -112,9 +117,22 @@ public class MainApp extends Application {
         } finally {
             System.setOut(original);
         }
-        transcript.appendText(output.toString());
+        String reply = output.toString().stripTrailing();
+        if (!reply.isEmpty()) {
+            addBotMessage(reply);
+        }
         if (!status.getText().startsWith("Error:")) {
             status.setText("Ready");
         }
+    }
+
+    /** Appends a left-aligned message bubble from Vermithor. */
+    private void addBotMessage(String text) {
+        dialogContainer.getChildren().add(DialogBox.botMessage(text, botAvatar));
+    }
+
+    /** Appends a right-aligned message bubble for the user's own input. */
+    private void addUserMessage(String text) {
+        dialogContainer.getChildren().add(DialogBox.userMessage(text, userAvatar));
     }
 }
