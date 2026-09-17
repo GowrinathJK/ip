@@ -11,6 +11,11 @@ public class Ui implements AutoCloseable {
         scanner = new Scanner(System.in);
     }
 
+    /** Returns whether another command line is available to read. */
+    public boolean hasNextCommand() {
+        return scanner.hasNextLine();
+    }
+
     /** Reads the next command line. */
     public String readCommand() {
         return scanner.nextLine().trim();

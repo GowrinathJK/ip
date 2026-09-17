@@ -14,7 +14,7 @@ import java.util.Locale;
 public class Vermithor {
     private static final Path DATA_FILE = Path.of("data", "vermithor.txt");
     private static final String UNKNOWN_COMMAND_MESSAGE =
-            "I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, find, or bye.";
+            "I don't know that command. Try todo, deadline, event, list, mark, unmark, delete, find, sort, or bye.";
     /**
      * Starts Vermithor and processes commands until the user says goodbye.
      *
@@ -34,6 +34,10 @@ public class Vermithor {
         Parser parser = new Parser();
 
         while (true) {
+            if (!ui.hasNextCommand()) {
+                System.out.println("Bye. Hope to see you again soon!");
+                break;
+            }
             String input = ui.readCommand();
             try {
                 if (input.equalsIgnoreCase("bye")) {
