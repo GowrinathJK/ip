@@ -223,6 +223,9 @@ public class Vermithor {
     /** Validates and converts a user-entered one-based task number. */
     private static int getTaskNumber(String details, int taskCount) throws VermithorException {
         assert taskCount >= 0 : "Task count cannot be negative";
+        if (taskCount == 0) {
+            throw new VermithorException("Your task list is empty, so there is no task to choose.");
+        }
         try {
             int taskNumber = Integer.parseInt(details);
             if (taskNumber < 1 || taskNumber > taskCount) {

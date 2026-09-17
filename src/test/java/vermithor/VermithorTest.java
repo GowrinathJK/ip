@@ -102,4 +102,14 @@ class VermithorTest {
         assertThrows(VermithorException.class, () -> Vermithor.processCommand(parser, "delete 0", tasks));
         assertThrows(VermithorException.class, () -> Vermithor.processCommand(parser, "unmark abc", tasks));
     }
+
+    @Test
+    void deleteOnEmptyListGivesAClearMessageInsteadOfARangeFromOneToZero() {
+        List<Task> tasks = new ArrayList<>();
+
+        VermithorException exception = assertThrows(VermithorException.class,
+                () -> Vermithor.processCommand(parser, "delete 1", tasks));
+
+        assertEquals("Your task list is empty, so there is no task to choose.", exception.getMessage());
+    }
 }
