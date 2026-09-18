@@ -69,6 +69,30 @@ class VermithorTest {
     }
 
     @Test
+    void deadlineRejectsImpossibleDateWithSpecificMessage() {
+        List<Task> tasks = new ArrayList<>();
+
+        VermithorException exception = assertThrows(VermithorException.class,
+                () -> Vermithor.processCommand(parser,
+                        "deadline submit report /by 2026-09-31", tasks));
+
+        assertEquals("The deadline date is not valid.", exception.getMessage());
+        assertTrue(tasks.isEmpty());
+    }
+
+    @Test
+    void deadlineReportsFormatErrorForWrongDateFormat() {
+        List<Task> tasks = new ArrayList<>();
+
+        VermithorException exception = assertThrows(VermithorException.class,
+                () -> Vermithor.processCommand(parser,
+                        "deadline submit report /by 31/09/2026", tasks));
+
+        assertEquals("Use a deadline date in yyyy-MM-dd format.", exception.getMessage());
+        assertTrue(tasks.isEmpty());
+    }
+
+    @Test
     void eventToleratesExtraWhitespaceAroundMarkers() throws VermithorException {
         List<Task> tasks = new ArrayList<>();
         Vermithor.processCommand(parser, "event  trip   /from  Mon  /to  Tue", tasks);
@@ -78,6 +102,28 @@ class VermithorTest {
         assertEquals("trip", event.getDescription());
         assertEquals("Mon", event.getFrom());
         assertEquals("Tue", event.getTo());
+    }
+
+    @Test
+    void eventRejectsImpossibleDateWithoutAddingTask() {
+        List<Task> tasks = new ArrayList<>();
+
+        VermithorException exception = assertThrows(VermithorException.class,
+                () -> Vermithor.processCommand(parser,
+                        "event meeting /from 2026-02-30 /to 2026-03-01", tasks));
+
+        assertEquals("Use valid event dates in yyyy-MM-dd format.", exception.getMessage());
+        assertTrue(tasks.isEmpty());
+    }
+
+    @Test
+    void eventRejectsEndDateThatIsNotAfterStartDate() {
+        List<Task> tasks = new ArrayList<>();
+
+        assertThrows(VermithorException.class, () -> Vermithor.processCommand(parser,
+                "event meeting /from 2026-03-02 /to 2026-03-01", tasks));
+
+        assertTrue(tasks.isEmpty());
     }
 
     @Test

@@ -151,6 +151,9 @@ public class Vermithor {
             LocalDate by = LocalDate.parse(dateText);
             addTask(new Deadline(description, by), tasks);
         } catch (DateTimeParseException e) {
+            if (dateText.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                throw new VermithorException("The deadline date is not valid.");
+            }
             throw new VermithorException("Use a deadline date in yyyy-MM-dd format.");
         }
     }
@@ -172,7 +175,24 @@ public class Vermithor {
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new VermithorException("Use event DESCRIPTION /from START /to END.");
         }
+        LocalDate fromDate = parseOptionalEventDate(from);
+        LocalDate toDate = parseOptionalEventDate(to);
+        if (fromDate != null && toDate != null && !toDate.isAfter(fromDate)) {
+            throw new VermithorException("The event end date must be after the start date.");
+        }
         addTask(new Event(description, from, to), tasks);
+    }
+
+    /** Validates ISO date-looking event values while retaining support for free-form times. */
+    private static LocalDate parseOptionalEventDate(String value) throws VermithorException {
+        if (!value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException e) {
+            throw new VermithorException("Use valid event dates in yyyy-MM-dd format.");
+        }
     }
 
     /** Marks or unmarks a task after validating its one-based list number. */

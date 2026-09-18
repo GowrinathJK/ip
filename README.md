@@ -45,4 +45,7 @@ find report
 sort
 ```
 
+For date-like event values, use valid dates in `yyyy-MM-dd` format. The end date
+must be later than the start date; free-form times such as `10:00` remain supported.
+
 **Warning:** Keep the `src/main/java` folder as the root folder for Java files, as this is the default location expected by Gradle.
